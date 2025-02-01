@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "68193834316",
+    "project_id": "mess-coin",
+    "storage_bucket": "mess-coin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68193834316:android:c2c4a3e7f8940efa29ebe9",
+        "android_client_info": {
+          "package_name": "com.messcoin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxV8okhaKW-VjzOaHKCOjKa4poLLWmQXo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
