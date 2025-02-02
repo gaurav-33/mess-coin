@@ -65,5 +65,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'mess-coin.firebasestorage.app',
     iosBundleId: 'com.messcoin',
   );
-
 }

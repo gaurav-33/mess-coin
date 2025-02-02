@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/controllers/signup_controller.dart';
-import 'package:messcoin/res/app_colors.dart';
-import 'package:messcoin/routes/app_routes.dart';
-import 'package:messcoin/widgets/rect_button.dart';
+import '../../controllers/signup_controller.dart';
+import '../../res/app_colors.dart';
+import '../../routes/app_routes.dart';
+import '../../widgets/rect_button.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});

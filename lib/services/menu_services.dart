@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:messcoin/services/firestore_ref_service.dart';
-import 'package:messcoin/utils/toast_snack_bar.dart';
+import '../services/firestore_ref_service.dart';
+import '../utils/toast_snack_bar.dart';
 
 import '../models/extra_meal_model.dart';
 import '../models/mess_menu_model.dart';
@@ -49,7 +49,6 @@ class MenuServices {
           .doc(day)
           .get();
 
-      
       if (messMenuDoc.exists) {
         return messMenuDoc.data();
       } else {

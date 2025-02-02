@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messcoin/res/app_colors.dart';
+import '../res/app_colors.dart';
 
 class NameDividerWidget extends StatelessWidget {
   const NameDividerWidget({super.key, required this.name});

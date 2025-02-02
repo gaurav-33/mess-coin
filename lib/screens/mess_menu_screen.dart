@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:messcoin/controllers/home_controller.dart';
-import 'package:messcoin/widgets/header_widget.dart';
+import '../controllers/home_controller.dart';
+import '../widgets/header_widget.dart';
 
 import '../res/app_colors.dart';
 import '../widgets/back_button.dart';
@@ -180,7 +180,6 @@ class MessMenuScreen extends StatelessWidget {
                               () => _buildMenuItem(homeController
                                   .messMenuModel.value?[selectedDay]?.dinner),
                             ),
-                            
                           ],
                         ),
                       )

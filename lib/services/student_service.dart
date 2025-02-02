@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:messcoin/models/user_model.dart';
-import 'package:messcoin/services/firestore_ref_service.dart';
+import '../models/user_model.dart';
+import '../services/firestore_ref_service.dart';
 import '../utils/toast_snack_bar.dart';
 
 class StudentService {
@@ -54,22 +54,19 @@ class StudentService {
   }
 
   Future<void> addRechargeTransaction(
-    String hostelId,
-    String uid,
-    int currentBal,
-    int leftCredit,
-    int rechargeAmount,
-    DateTime transactionTime,
-    TopupHistory topupHistory
-  ) async {
+      String hostelId,
+      String uid,
+      int currentBal,
+      int leftCredit,
+      int rechargeAmount,
+      DateTime transactionTime,
+      TopupHistory topupHistory) async {
     try {
       CollectionReference<StudentModel> studentModelRef =
           firestoreRefService.getCollectionRef<StudentModel>(
               basePath: "hostel_mess/$hostelId/students",
               fromJson: (json) => StudentModel.fromJson(json),
               toJson: (model) => model.toJson());
-
-      
 
       await studentModelRef.doc(uid).update({
         'current_bal': currentBal + rechargeAmount,
@@ -89,10 +86,10 @@ class StudentService {
   Future<void> addCouponTransaction(
       String hostelId,
       String uid,
-      String transactionId,
       int paymentAmount,
       DateTime transactionTime,
-      int prevAmount) async {
+      int prevAmount,
+      CouponTransactionHistory couponTransactionHistory) async {
     try {
       CollectionReference<CouponTransactionHistory>
           couponTransactionHistoryRef =
@@ -102,15 +99,8 @@ class StudentService {
               fromJson: (json) => CouponTransactionHistory.fromJson(json),
               toJson: (model) => model.toJson());
 
-      CouponTransactionHistory couponTransactionHistory =
-          CouponTransactionHistory(
-              transactionId: transactionId,
-              amount: paymentAmount,
-              transactionTime: transactionTime,
-              status: "completed");
-
       await couponTransactionHistoryRef
-          .doc(transactionId)
+          .doc(couponTransactionHistory.transactionId)
           .set(couponTransactionHistory);
 
       CollectionReference<StudentModel> studentModelRef =

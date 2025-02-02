@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:messcoin/utils/toast_snack_bar.dart';
-
+import '../utils/toast_snack_bar.dart';
 import '../res/app_colors.dart';
 
 class LocalAuthController extends GetxController {

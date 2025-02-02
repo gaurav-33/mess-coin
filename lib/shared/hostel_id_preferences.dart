@@ -12,5 +12,4 @@ class HostelIdPreferences {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     return pref.getString(_hostelIdKey);
   }
-  
 }

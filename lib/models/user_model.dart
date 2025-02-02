@@ -118,7 +118,7 @@ class StudentModel {
         "uid": uid,
         "current_sem": currentSem,
         "status": status,
-        "is_verified" : isVerified,
+        "is_verified": isVerified,
         "total_credit": totalCredit,
         "left_credit": leftCredit,
         "current_bal": currentBal,
@@ -140,7 +140,7 @@ class StudentModel {
 
 class CouponTransactionHistory {
   CouponTransactionHistory({
-    required this.transactionId, 
+    required this.transactionId,
     required this.amount,
     required this.transactionTime,
     required this.status,

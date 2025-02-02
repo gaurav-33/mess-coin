@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:messcoin/controllers/home_controller.dart';
-import 'package:messcoin/models/user_model.dart';
-import 'package:messcoin/widgets/header_widget.dart';
-import 'package:messcoin/widgets/name_divider_widget.dart';
+import '../controllers/home_controller.dart';
+import '../models/user_model.dart';
+import '../widgets/header_widget.dart';
+import '../widgets/name_divider_widget.dart';
 
 import '../res/app_colors.dart';
 
@@ -49,7 +49,9 @@ class HistoryScreen extends StatelessWidget {
                       height: 10,
                     ),
                     Obx(() => _buildHistoryUI<TopupHistory>(
-                        (homeController.studentModel.value?.topupHistory.reversed.toList()),
+                        (homeController
+                            .studentModel.value?.topupHistory.reversed
+                            .toList()),
                         (item) => item.amount.toString(),
                         (item) => item.transactionTime,
                         (item) => item.transactionId.toString())),
@@ -61,7 +63,7 @@ class HistoryScreen extends StatelessWidget {
                       height: 10,
                     ),
                     Obx(() => _buildHistoryUI<CouponTransactionHistory>(
-                        (homeController.couponTransactionHistoryList.reversed.toList()),
+                        (homeController.couponTransactionHistoryList),
                         (item) => item.amount.toString(),
                         (item) => item.transactionTime,
                         (item) => item.transactionId.toString())),
@@ -74,8 +76,6 @@ class HistoryScreen extends StatelessWidget {
       ),
     );
   }
-
-
 
   Widget _buildHistoryUI<T>(List<T>? history, String Function(T) getAmount,
       DateTime? Function(T) getTime, String Function(T) getTransactionId) {

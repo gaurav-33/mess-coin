@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/controllers/home_controller.dart';
-import 'package:messcoin/controllers/local_auth_controller.dart';
-import 'package:messcoin/routes/app_routes.dart';
-import 'package:messcoin/widgets/back_button.dart';
-import 'package:messcoin/widgets/header_widget.dart';
-import 'package:messcoin/widgets/rect_button.dart';
+import '../controllers/home_controller.dart';
+import '../controllers/local_auth_controller.dart';
+import '../routes/app_routes.dart';
+import '../widgets/back_button.dart';
+import '../widgets/header_widget.dart';
+import '../widgets/rect_button.dart';
 
 import '../res/app_colors.dart';
 import '../utils/toast_snack_bar.dart';

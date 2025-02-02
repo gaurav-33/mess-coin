@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/controllers/home_controller.dart';
-import 'package:messcoin/models/extra_meal_model.dart';
-import 'package:messcoin/routes/app_routes.dart';
-import 'package:messcoin/widgets/card_widget.dart';
-import 'package:messcoin/widgets/header_widget.dart';
-import 'package:messcoin/widgets/name_divider_widget.dart';
+import '../controllers/home_controller.dart';
+import '../models/extra_meal_model.dart';
+import '../routes/app_routes.dart';
+import '../widgets/card_widget.dart';
+import '../widgets/header_widget.dart';
+import '../widgets/name_divider_widget.dart';
 import '../res/app_colors.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -24,7 +24,6 @@ class HomeScreen extends StatelessWidget {
           iconPath: "assets/icons/transaction.png",
           onTap: () {
             Get.toNamed(AppRoutes.getPaymentRoute());
-            
           },
           isEnabled: homeController.studentModel.value?.isVerified,
         ),
@@ -44,8 +43,9 @@ class HomeScreen extends StatelessWidget {
         iconPath: "assets/icons/transaction-history.png",
         onTap: () {
           Get.toNamed(AppRoutes.getHistoryRoute());
-          homeController.couponTransactionHistoryList.isEmpty ? homeController.fetchCouponTransactionList() : null ;
-          
+          homeController.couponTransactionHistoryList.isEmpty
+              ? homeController.fetchCouponTransactionList()
+              : null;
         },
       ),
       CardWidget(

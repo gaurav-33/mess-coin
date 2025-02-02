@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:messcoin/controllers/home_controller.dart';
-import 'package:messcoin/res/app_colors.dart';
+import '../controllers/home_controller.dart';
+import '../res/app_colors.dart';
 
 import '../routes/app_routes.dart';
 
@@ -14,7 +14,6 @@ class MessCardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -32,7 +31,9 @@ class MessCardScreen extends StatelessWidget {
                 _buildProfileUI()
               ],
             ),
-            const SizedBox(height: 50,),
+            const SizedBox(
+              height: 50,
+            ),
             OutlinedButton(
               onPressed: () {
                 Get.until((route) => route.settings.name == AppRoutes.home);

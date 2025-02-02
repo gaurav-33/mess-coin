@@ -18,9 +18,7 @@ class BackButtonWidget extends StatelessWidget {
       child: Text(
         "Back",
         style: TextStyle(
-            color: AppColors.nightSky,
-            fontSize: 14,
-            fontFamily: "Aquire"),
+            color: AppColors.nightSky, fontSize: 14, fontFamily: "Aquire"),
       ),
     );
   }

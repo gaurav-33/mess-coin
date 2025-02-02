@@ -1,16 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/models/extra_meal_model.dart';
-import 'package:messcoin/models/mess_menu_model.dart';
-import 'package:messcoin/models/mess_topup_history_model.dart';
-import 'package:messcoin/models/user_model.dart';
-import 'package:messcoin/services/firestore_ref_service.dart';
-import 'package:messcoin/services/hostel_mess_service.dart';
-import 'package:messcoin/services/menu_services.dart';
-import 'package:messcoin/services/student_service.dart';
-import 'package:messcoin/utils/toast_snack_bar.dart';
-
+import '../models/extra_meal_model.dart';
+import '../models/mess_menu_model.dart';
+import '../models/user_model.dart';
+import '../services/firestore_ref_service.dart';
+import '../services/hostel_mess_service.dart';
+import '../services/menu_services.dart';
+import '../services/student_service.dart';
+import '../utils/toast_snack_bar.dart';
 import '../routes/app_routes.dart';
 import '../utils/logger_util.dart';
 
@@ -116,6 +113,7 @@ class HomeController extends GetxController {
           rechargeAmount: rechargeAmount,
           transactionId: transactionId,
           transactionTime: transactionTime.toIso8601String());
+
       studentModel.value = studentModel.value?.copyWith(
         currentBal: prevAmount + rechargeAmount,
         leftCredit: leftCredit - rechargeAmount,
@@ -145,8 +143,15 @@ class HomeController extends GetxController {
       int paymentAmount = int.tryParse(amount) ?? 0;
       int prevAmount = studentModel.value?.currentBal ?? 0;
       int currAmount = prevAmount - paymentAmount;
-      await StudentService().addCouponTransaction(hostelId, uid, transactionId,
-          paymentAmount, transactionTime, prevAmount);
+      CouponTransactionHistory couponTransactionHistory =
+          CouponTransactionHistory(
+              transactionId: transactionId,
+              amount: paymentAmount,
+              transactionTime: transactionTime,
+              status: "completed");
+
+      await StudentService().addCouponTransaction(hostelId, uid, paymentAmount,
+          transactionTime, prevAmount, couponTransactionHistory);
 
       studentModel.value = studentModel.value?.copyWith(
         currentBal: currAmount,
@@ -160,6 +165,7 @@ class HomeController extends GetxController {
           transactionId: transactionId,
           transactionTime: transactionTime.toIso8601String());
 
+      couponTransactionHistoryList.insert(0, couponTransactionHistory);
       AppLogger.i("Payment successful. Remaining balance: ₹$currAmount");
       AppSnackBar.success("Payment Successful.");
     } catch (e) {

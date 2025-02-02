@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:messcoin/services/hostel_mess_service.dart';
+import '../services/hostel_mess_service.dart';
 
 class HostelController extends GetxController {
   RxList<Map<String, String>> hostels = <Map<String, String>>[].obs;

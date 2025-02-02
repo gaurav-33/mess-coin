@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:messcoin/models/hostel_mess_model.dart';
-import 'package:messcoin/services/firestore_ref_service.dart';
+import '../models/hostel_mess_model.dart';
+import '../services/firestore_ref_service.dart';
 import '../models/mess_topup_history_model.dart';
 import '../utils/toast_snack_bar.dart';
 
@@ -40,15 +40,14 @@ class HostelMessService {
     }
   }
 
-  Future<void> addTransaction( 
-    {required bool isTopUp,
+  Future<void> addTransaction(
+      {required bool isTopUp,
       required String hostelId,
       required String name,
       required String rollNo,
       required int rechargeAmount,
       required String transactionId,
-      required String transactionTime}
-      ) async {
+      required String transactionTime}) async {
     try {
       String path = isTopUp ? "topup_history" : "coupon_history";
       CollectionReference<MessTopupHistoryModel> messTopupModelRef =

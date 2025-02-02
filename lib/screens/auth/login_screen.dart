@@ -1,9 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/controllers/login_controller.dart';
-import 'package:messcoin/res/app_colors.dart';
-import 'package:messcoin/routes/app_routes.dart';
+import '../../controllers/login_controller.dart';
+import '../../res/app_colors.dart';
+import '../../routes/app_routes.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});

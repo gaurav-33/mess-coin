@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/shared/hostel_id_preferences.dart';
-
+import '../shared/hostel_id_preferences.dart';
 import '../routes/app_routes.dart';
 import '../utils/logger_util.dart';
 
