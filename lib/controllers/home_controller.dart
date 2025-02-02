@@ -6,11 +6,13 @@ import 'package:messcoin/models/mess_menu_model.dart';
 import 'package:messcoin/models/mess_topup_history_model.dart';
 import 'package:messcoin/models/user_model.dart';
 import 'package:messcoin/services/firestore_ref_service.dart';
+import 'package:messcoin/services/hostel_mess_service.dart';
 import 'package:messcoin/services/menu_services.dart';
 import 'package:messcoin/services/student_service.dart';
 import 'package:messcoin/utils/toast_snack_bar.dart';
 
 import '../routes/app_routes.dart';
+import '../utils/logger_util.dart';
 
 class HomeController extends GetxController {
   Rx<StudentModel?> studentModel = Rx<StudentModel?>(null);
@@ -29,19 +31,22 @@ class HomeController extends GetxController {
   @override
   void onReady() async {
     super.onReady();
+    AppLogger.i("HomeController initialized.");
     final args = Get.arguments;
     if (args == null || args is! Map<String, dynamic>) {
+      AppLogger.w("Invalid arguments received. Redirecting...");
       AppSnackBar.error("Invalid arguments. Redirecting...");
       Get.offAllNamed(AppRoutes.getSelectHostelRoute());
       return;
     }
     hostelId = args['hostel_id'];
+    AppLogger.d("Hostel ID received: $hostelId");
 
-    await fetchStudentData(); 
+    await fetchStudentData();
 
     if (studentModel.value == null) {
-      Get.offAllNamed(
-          AppRoutes.getSelectHostelRoute()); 
+      AppLogger.w("Student data is null. Redirecting...");
+      Get.offAllNamed(AppRoutes.getSelectHostelRoute());
       return;
     }
 
@@ -51,28 +56,36 @@ class HomeController extends GetxController {
 
   Future<void> fetchStudentData() async {
     try {
+      AppLogger.d("Fetching student data...");
       final fetchedStudent = await StudentService().fetchStudent(uid, hostelId);
+
       if (fetchedStudent != null) {
         studentModel.value = fetchedStudent;
+        AppLogger.i("Student data fetched successfully.");
       } else {
+        AppLogger.w("User data not found.");
         AppSnackBar.error("User Data Not Found.");
-        return;
       }
     } catch (e) {
+      AppLogger.e("Error fetching student data: $e");
       AppSnackBar.error(e.toString());
     }
   }
 
   void fetchExtraMealData() async {
     try {
+      AppLogger.d("Fetching extra meal data...");
       final fetchedExtraMeal = await MenuServices().fetchExtraMeal(hostelId);
 
       if (fetchedExtraMeal != null) {
         extraMealModel.value = fetchedExtraMeal;
+        AppLogger.i("Extra meal data fetched successfully.");
       } else {
+        AppLogger.w("Extra meal data not found.");
         AppSnackBar.error("Extra Meal Not Found.");
       }
     } catch (e) {
+      AppLogger.e("Error fetching extra meal data: $e");
       AppSnackBar.error(e.toString());
     }
   }
@@ -81,43 +94,28 @@ class HomeController extends GetxController {
       String amount, String transactionId, DateTime transactionTime) async {
     try {
       isLoading.value = true;
+      AppLogger.d(
+          "Performing recharge of ₹$amount with transaction ID: $transactionId");
+
       int rechargeAmount = int.tryParse(amount) ?? 0;
-      CollectionReference<StudentModel> studentModelRef =
-          firestoreRefService.getCollectionRef<StudentModel>(
-              basePath: "hostel_mess/$hostelId/students",
-              fromJson: (json) => StudentModel.fromJson(json),
-              toJson: (model) => model.toJson());
       int prevAmount = studentModel.value?.currentBal ?? 0;
       int leftCredit = studentModel.value?.leftCredit ?? 0;
-
       TopupHistory topupHistory = TopupHistory(
           transactionId: transactionId,
           amount: rechargeAmount,
           transactionTime: transactionTime);
 
-      await studentModelRef.doc(uid).update({
-        'current_bal': prevAmount + rechargeAmount,
-        'left_credit': leftCredit - rechargeAmount,
-        'updated_at': transactionTime.toIso8601String(),
-        'topup_history': FieldValue.arrayUnion([topupHistory.toJson()]),
-      });
+      await StudentService().addRechargeTransaction(hostelId, uid, prevAmount,
+          leftCredit, rechargeAmount, transactionTime, topupHistory);
 
-      CollectionReference<MessTopupHistoryModel> messTopupModelRef =
-          firestoreRefService.getCollectionRef<MessTopupHistoryModel>(
-              basePath:
-                  'hostel_mess/$hostelId/topup_history/doc/${DateTime.now().toIso8601String().split('T')[0]}',
-              fromJson: (json) => MessTopupHistoryModel.fromJson(json),
-              toJson: (model) => model.toJson());
-
-      MessTopupHistoryModel messTopupHistoryModel = MessTopupHistoryModel(
+      await HostelMessService().addTransaction(
+          isTopUp: true,
+          hostelId: hostelId,
           name: "${studentModel.value?.name}",
-          roll: "${studentModel.value?.rollNo}",
-          amount: rechargeAmount,
+          rollNo: "${studentModel.value?.rollNo}",
+          rechargeAmount: rechargeAmount,
           transactionId: transactionId,
           transactionTime: transactionTime.toIso8601String());
-
-      await messTopupModelRef.doc(transactionId).set(messTopupHistoryModel);
-
       studentModel.value = studentModel.value?.copyWith(
         currentBal: prevAmount + rechargeAmount,
         leftCredit: leftCredit - rechargeAmount,
@@ -126,15 +124,13 @@ class HomeController extends GetxController {
           topupHistory
         ],
       );
+      AppLogger.i(
+          "Recharge successful. New balance: ₹${prevAmount + rechargeAmount}");
       AppSnackBar.success("Recharge successful!");
       isLoading.value = false;
     } catch (e) {
-      if (e is FirebaseException) {
-        AppSnackBar.error("Failed to recharge: ${e.message}",
-            errorCode: e.code);
-      } else {
-        AppSnackBar.error("An error occurred: ${e.toString()}");
-      }
+      AppLogger.e("Recharge failed: $e");
+      AppSnackBar.error("An error occurred: ${e.toString()}");
     } finally {
       isLoading.value = false;
     }
@@ -144,68 +140,31 @@ class HomeController extends GetxController {
       String amount, String transactionId, DateTime transactionTime) async {
     try {
       isLoading.value = true;
+      AppLogger.d(
+          "Processing payment of ₹$amount with transaction ID: $transactionId");
       int paymentAmount = int.tryParse(amount) ?? 0;
-
-      CollectionReference<CouponTransactionHistory>
-          couponTransactionHistoryRef =
-          firestoreRefService.getCollectionRef<CouponTransactionHistory>(
-              basePath:
-                  "hostel_mess/$hostelId/students/$uid/coupon_transaction_history/doc/${DateTime.now().toIso8601String().split('T')[0]}",
-              fromJson: (json) => CouponTransactionHistory.fromJson(json),
-              toJson: (model) => model.toJson());
-
-      CouponTransactionHistory couponTransactionHistory =
-          CouponTransactionHistory(
-              transactionId: transactionId,
-              amount: paymentAmount,
-              transactionTime: transactionTime,
-              status: "completed");
-
-      await couponTransactionHistoryRef
-          .doc(transactionId)
-          .set(couponTransactionHistory);
-
-      CollectionReference<StudentModel> studentModelRef =
-          firestoreRefService.getCollectionRef<StudentModel>(
-              basePath: "hostel_mess/$hostelId/students",
-              fromJson: (json) => StudentModel.fromJson(json),
-              toJson: (model) => model.toJson());
       int prevAmount = studentModel.value?.currentBal ?? 0;
       int currAmount = prevAmount - paymentAmount;
-
-      await studentModelRef.doc(uid).update({
-        'current_bal': currAmount,
-        'updated_at': transactionTime.toIso8601String(),
-      });
+      await StudentService().addCouponTransaction(hostelId, uid, transactionId,
+          paymentAmount, transactionTime, prevAmount);
 
       studentModel.value = studentModel.value?.copyWith(
         currentBal: currAmount,
       );
-
-      MessTopupHistoryModel messTopupHistoryModel = MessTopupHistoryModel(
+      await HostelMessService().addTransaction(
+          isTopUp: false,
+          hostelId: hostelId,
           name: "${studentModel.value?.name}",
-          roll: "${studentModel.value?.rollNo}",
-          amount: paymentAmount,
+          rollNo: "${studentModel.value?.rollNo}",
+          rechargeAmount: paymentAmount,
           transactionId: transactionId,
           transactionTime: transactionTime.toIso8601String());
 
-      CollectionReference<MessTopupHistoryModel> messTopupModelRef =
-          firestoreRefService.getCollectionRef<MessTopupHistoryModel>(
-              basePath:
-                  'hostel_mess/$hostelId/coupon_history/doc/${DateTime.now().toIso8601String().split('T')[0]}',
-              fromJson: (json) => MessTopupHistoryModel.fromJson(json),
-              toJson: (model) => model.toJson());
-
-      await messTopupModelRef.doc(transactionId).set(messTopupHistoryModel);
-      couponTransactionHistoryList.insert(0, couponTransactionHistory);
+      AppLogger.i("Payment successful. Remaining balance: ₹$currAmount");
       AppSnackBar.success("Payment Successful.");
     } catch (e) {
-      if (e is FirebaseException) {
-        AppSnackBar.error("Failed to recharge: ${e.message}",
-            errorCode: e.code);
-      } else {
-        AppSnackBar.error("An error occurred: ${e.toString()}");
-      }
+      AppLogger.e("Payment failed: $e");
+      AppSnackBar.error("An error occurred: ${e.toString()}");
     } finally {
       isLoading.value = false;
     }
@@ -213,7 +172,8 @@ class HomeController extends GetxController {
 
   void fetchMessMenuData() async {
     try {
-      List days = [
+      AppLogger.d("Fetching mess menu data...");
+      List<String> days = [
         'monday',
         'tuesday',
         'wednesday',
@@ -222,25 +182,33 @@ class HomeController extends GetxController {
         'saturday',
         'sunday'
       ];
+
       for (String day in days) {
         final fetchMessMenuData =
             await MenuServices().fetchMenuMeal(hostelId, day);
         if (fetchMessMenuData != null) {
           messMenuModel.value[day] = fetchMessMenuData;
+          AppLogger.i("Fetched mess menu for $day.");
         } else {
+          AppLogger.w("Mess menu not found for $day.");
           AppSnackBar.error("Mess Menu Not Found.");
         }
       }
     } catch (e) {
+      AppLogger.e("Error fetching mess menu data: $e");
       AppSnackBar.error(e.toString());
     }
   }
 
-  void fetchCoupnTransactionList() async {
+  void fetchCouponTransactionList() async {
     try {
+      AppLogger.d("Fetching coupon transaction history...");
       couponTransactionHistoryList.value =
           await StudentService().fetchCouponTransactionHistory(uid, hostelId);
+      AppLogger.i(
+          "Fetched ${couponTransactionHistoryList.length} transaction(s).");
     } catch (e) {
+      AppLogger.e("Error fetching transaction history: $e");
       AppSnackBar.error(e.toString());
     }
   }

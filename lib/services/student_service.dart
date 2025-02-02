@@ -53,8 +53,88 @@ class StudentService {
     return null;
   }
 
+  Future<void> addRechargeTransaction(
+    String hostelId,
+    String uid,
+    int currentBal,
+    int leftCredit,
+    int rechargeAmount,
+    DateTime transactionTime,
+    TopupHistory topupHistory
+  ) async {
+    try {
+      CollectionReference<StudentModel> studentModelRef =
+          firestoreRefService.getCollectionRef<StudentModel>(
+              basePath: "hostel_mess/$hostelId/students",
+              fromJson: (json) => StudentModel.fromJson(json),
+              toJson: (model) => model.toJson());
+
+      
+
+      await studentModelRef.doc(uid).update({
+        'current_bal': currentBal + rechargeAmount,
+        'left_credit': leftCredit - rechargeAmount,
+        'updated_at': transactionTime.toIso8601String(),
+        'topup_history': FieldValue.arrayUnion([topupHistory.toJson()]),
+      });
+    } catch (e) {
+      if (e is FirebaseException) {
+        AppSnackBar.error(e.message ?? "An error occurred.", errorCode: e.code);
+      } else {
+        AppSnackBar.error("An unexpected error occurred. ${e.toString()}");
+      }
+    }
+  }
+
+  Future<void> addCouponTransaction(
+      String hostelId,
+      String uid,
+      String transactionId,
+      int paymentAmount,
+      DateTime transactionTime,
+      int prevAmount) async {
+    try {
+      CollectionReference<CouponTransactionHistory>
+          couponTransactionHistoryRef =
+          firestoreRefService.getCollectionRef<CouponTransactionHistory>(
+              basePath:
+                  "hostel_mess/$hostelId/students/$uid/coupon_transaction_history/doc/${DateTime.now().toIso8601String().split('T')[0]}",
+              fromJson: (json) => CouponTransactionHistory.fromJson(json),
+              toJson: (model) => model.toJson());
+
+      CouponTransactionHistory couponTransactionHistory =
+          CouponTransactionHistory(
+              transactionId: transactionId,
+              amount: paymentAmount,
+              transactionTime: transactionTime,
+              status: "completed");
+
+      await couponTransactionHistoryRef
+          .doc(transactionId)
+          .set(couponTransactionHistory);
+
+      CollectionReference<StudentModel> studentModelRef =
+          firestoreRefService.getCollectionRef<StudentModel>(
+              basePath: "hostel_mess/$hostelId/students",
+              fromJson: (json) => StudentModel.fromJson(json),
+              toJson: (model) => model.toJson());
+      int currAmount = prevAmount - paymentAmount;
+
+      await studentModelRef.doc(uid).update({
+        'current_bal': currAmount,
+        'updated_at': transactionTime.toIso8601String(),
+      });
+    } catch (e) {
+      if (e is FirebaseException) {
+        AppSnackBar.error(e.message ?? "An error occurred.", errorCode: e.code);
+      } else {
+        AppSnackBar.error("An unexpected error occurred. ${e.toString()}");
+      }
+    }
+  }
+
   Future<List<CouponTransactionHistory>> fetchCouponTransactionHistory(
-      String uid,String hostelId) async {
+      String uid, String hostelId) async {
     try {
       List<String> dateList = getPastNdays(DateTime.now(), 3);
       List<CouponTransactionHistory> couponTransactionList = [];

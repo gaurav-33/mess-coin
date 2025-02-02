@@ -130,7 +130,7 @@ class LoginScreen extends StatelessWidget {
                 _buildForgetPasswordUI();
               },
               child: Text(
-                "Fogotten Password?",
+                "Forgot Password?",
                 style: TextStyle(
                   fontSize: 15,
                   color: AppColors.nightSky,

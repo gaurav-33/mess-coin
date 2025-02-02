@@ -44,7 +44,7 @@ class HomeScreen extends StatelessWidget {
         iconPath: "assets/icons/transaction-history.png",
         onTap: () {
           Get.toNamed(AppRoutes.getHistoryRoute());
-          homeController.couponTransactionHistoryList.isEmpty ? homeController.fetchCoupnTransactionList() : null ;
+          homeController.couponTransactionHistoryList.isEmpty ? homeController.fetchCouponTransactionList() : null ;
           
         },
       ),
