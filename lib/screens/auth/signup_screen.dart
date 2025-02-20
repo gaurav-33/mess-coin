@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:messcoin/utils/toast_snack_bar.dart';
 import '../../controllers/signup_controller.dart';
 import '../../res/app_colors.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/rect_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
@@ -61,6 +64,8 @@ class SignupScreen extends StatelessWidget {
                 color: AppColors.nightSky,
               ),
             ),
+            const SizedBox(height: 8,),
+            _buildImageUi(context),
             _buidInputField(
                 title: "Name",
                 hintText: "Enter Name",
@@ -86,27 +91,18 @@ class SignupScreen extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            RectButton(child: Obx(() {
-              return signupController.isLoading.value
-                  ? CircularProgressIndicator(
-                      color: AppColors.aquaPastel,
-                    )
-                  : Text(
-                      "Create Account",
-                      style: TextStyle(
-                          color: AppColors.aquaPastel,
-                          fontSize: 20,
-                          fontFamily: "Aquire"),
-                    );
-            }), onTap: () {
-              signupController.signup(
-                  emailController.text.trim().toString(),
-                  passwordController.text.toString().trim(),
-                  nameController.text.toString().trim(),
-                  rollController.text.toString().trim());
+            Obx(() => RectButton(
+                name: "Create Account",
+                onTap: () {
+                  signupController.signup(
+                      emailController.text.trim().toString(),
+                      passwordController.text.toString().trim(),
+                      nameController.text.toString().trim(),
+                      rollController.text.toString().trim());
 
-              _buildEmailVerificationUI(name: nameController.text);
-            }),
+                  _buildEmailVerificationUI(name: nameController.text);
+                },
+                isLoading: signupController.isLoading.value)),
             const SizedBox(
               height: 10,
             ),
@@ -233,6 +229,7 @@ class SignupScreen extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     Get.back();
+                    _launchGmail();
                   },
                   child: Text(
                     "Open Mail",
@@ -316,5 +313,83 @@ class SignupScreen extends StatelessWidget {
         ),
       ]),
     );
+  }
+
+  _buildImageUi(BuildContext context) {
+    final theme = Theme.of(context);
+    final width = Get.width * 1.3;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        SizedBox(
+            height: width * 0.5,
+            width: width * 0.4,
+            child: Obx(() {
+              return Card(
+                  color: theme.colorScheme.primaryContainer,
+                  elevation: 10,
+                  child: Center(
+                    child: signupController.imageFile.value != null
+                        ? Image.file(
+                            signupController.imageFile.value!,
+                            fit: BoxFit.cover,
+                          )
+                        : Text("Add Image"),
+                  ));
+            })),
+        Column(
+          children: [
+            ElevatedButton.icon(
+              label: Text(
+                "From Gallery",
+                style: TextStyle(color: AppColors.nightSky),
+              ),
+              onPressed: () {
+                signupController.pickImageFromGallery();
+              },
+              icon: Icon(
+                Icons.photo_album,
+                color: AppColors.nightSky,
+              ),
+            ),
+            ElevatedButton.icon(
+              label: Text(
+                "From Camera",
+                style: TextStyle(color: AppColors.nightSky),
+              ),
+              onPressed: () {
+                signupController.pickImageFromCamera();
+              },
+              icon: Icon(
+                Icons.photo_camera,
+                color: AppColors.nightSky,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  _launchGmail() async {
+    if (Platform.isAndroid) {
+      final Uri gmailUri = Uri.parse("intent://com.google.android.gm/#Intent;scheme=android-app;end;");
+      if (await canLaunchUrl(gmailUri)) {
+        await launchUrl(gmailUri);
+      } else {
+        AppSnackBar.error('Could not launch Gmail');
+        // throw 'Could not launch Gmail';
+      }
+    } else if (Platform.isIOS) {
+      final Uri gmailUri = Uri.parse("googlegmail://");
+      if (await canLaunchUrl(gmailUri)) {
+        await launchUrl(gmailUri);
+      } else {
+        AppSnackBar.error('Could not launch Gmail');
+        // throw 'Could not launch Gmail';
+      }
+    } else {
+      throw 'Unsupported platform';
+    }
   }
 }

@@ -18,7 +18,9 @@ class ProfileScreen extends StatelessWidget {
         (((homeController.studentModel.value?.totalCredit ?? 0) -
                     (homeController.studentModel.value?.leftCredit ?? 0)) *
                 100 /
-                (homeController.studentModel.value?.totalCredit ?? 0))
+                (homeController.studentModel.value?.totalCredit == 0
+                    ? 1
+                    : homeController.studentModel.value?.totalCredit ?? 1))
             .toStringAsFixed(2);
     return Scaffold(
       body: SingleChildScrollView(
@@ -70,7 +72,13 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     child: Image(
                       image: NetworkImage(
-                          "https://i.pinimg.com/736x/c0/99/15/c099159849a5f3399e05335f2c56adca.jpg"),
+                        (homeController.studentModel.value?.profileUrl == "" ||
+                                homeController.studentModel.value?.profileUrl ==
+                                    null)
+                            ? "https://i.pinimg.com/736x/c0/99/15/c099159849a5f3399e05335f2c56adca.jpg"
+                            : homeController.studentModel.value?.profileUrl ??
+                                "https://i.pinimg.com/736x/c0/99/15/c099159849a5f3399e05335f2c56adca.jpg",
+                      ),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -89,6 +97,8 @@ class ProfileScreen extends StatelessWidget {
                       "${homeController.studentModel.value?.hostel?.name}"),
                   _buildFieldUI("Room no.",
                       "${homeController.studentModel.value?.hostel?.roomNumber}"),
+                  _buildFieldUI("LeftOver Credit",
+                      "${homeController.studentModel.value?.leftOverCredit}"),
                   _buildFieldUI(
                       "Status", "${homeController.studentModel.value?.status}"),
                   _buildFieldUI("IsVerified",
@@ -115,8 +125,12 @@ class ProfileScreen extends StatelessWidget {
                                   (homeController
                                           .studentModel.value?.leftCredit ??
                                       0)) /
-                              (homeController.studentModel.value?.totalCredit ??
-                                  0)),
+                              (homeController.studentModel.value?.totalCredit ==
+                                      0
+                                  ? 1
+                                  : homeController
+                                          .studentModel.value?.totalCredit ??
+                                      1)),
                       decoration: BoxDecoration(
                         color: AppColors.aquaPastel,
                         borderRadius: BorderRadius.circular(20),

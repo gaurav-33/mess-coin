@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:messcoin/screens/feedback_screen.dart';
+import 'package:messcoin/screens/leave_screen.dart';
 import '../screens/auth/select_hostel_screen.dart';
 import '../screens/history_screen.dart';
 import '../screens/mess_card_screen.dart';
@@ -23,6 +26,8 @@ class AppRoutes {
   static String profile = "/profile";
   static String messcard = "/messCard";
   static String messmenu = "/messMenu";
+  static String feedback = '/feedback';
+  static String leaveHistory = '/leaveHistory';
 
   static String getSplashRoute() => splash;
   static String getHomeRoute() => home;
@@ -35,6 +40,8 @@ class AppRoutes {
   static String getProfileRoute() => profile;
   static String getMessCardRoute() => messcard;
   static String getMessMenuRoute() => messmenu;
+  static String getFeedbackRoute() => feedback;
+  static String getLeaveRoute() => leaveHistory;
 
   static List<GetPage> routes = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -48,5 +55,7 @@ class AppRoutes {
     GetPage(name: profile, page: () => ProfileScreen()),
     GetPage(name: messcard, page: () => MessCardScreen()),
     GetPage(name: messmenu, page: () => MessMenuScreen()),
+    GetPage(name: feedback, page: () => FeedbackScreen()),
+    GetPage(name: leaveHistory, page: () => LeaveScreen()),
   ];
 }

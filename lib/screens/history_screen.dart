@@ -78,7 +78,7 @@ class HistoryScreen extends StatelessWidget {
   }
 
   Widget _buildHistoryUI<T>(List<T>? history, String Function(T) getAmount,
-      DateTime? Function(T) getTime, String Function(T) getTransactionId) {
+      String? Function(T) getTime, String Function(T) getTransactionId) {
     if (history == null || history.isEmpty) {
       return const Text("Not Found");
     }
@@ -117,7 +117,8 @@ class HistoryScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      DateFormat.yMMMEd().add_jm().format(getTime(item)!),
+                      DateFormat.yMMMEd().add_jm().format(
+                          DateTime.tryParse(getTime(item)!) ?? DateTime.now()),
                       style: TextStyle(
                         color: Colors.white70,
                         fontFamily: "Poppins",

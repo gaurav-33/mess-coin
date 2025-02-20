@@ -3,12 +3,14 @@ class StudentModel {
     required this.name,
     required this.rollNo,
     required this.email,
+    required this.profileUrl,
     required this.uid,
     required this.currentSem,
     required this.status,
     required this.isVerified,
     required this.totalCredit,
     required this.leftCredit,
+    required this.leftOverCredit,
     required this.currentBal,
     required this.topupHistory,
     required this.hostel,
@@ -23,12 +25,14 @@ class StudentModel {
   final String? name;
   final String? rollNo;
   final String? email;
+  final String? profileUrl;
   final String? uid;
   final int? currentSem;
   final String? status;
   final bool? isVerified;
   final int? totalCredit;
   final int? leftCredit;
+  final int? leftOverCredit;
   final int? currentBal;
   final List<TopupHistory> topupHistory;
   final Hostel? hostel;
@@ -43,6 +47,7 @@ class StudentModel {
     String? name,
     String? rollNo,
     String? email,
+    String? profileUrl,
     String? uid,
     String? mpin,
     int? currentSem,
@@ -50,6 +55,7 @@ class StudentModel {
     bool? isVerified,
     int? totalCredit,
     int? leftCredit,
+    int? leftOverCredit,
     int? currentBal,
     List<TopupHistory>? topupHistory,
     Hostel? hostel,
@@ -64,12 +70,14 @@ class StudentModel {
       name: name ?? this.name,
       rollNo: rollNo ?? this.rollNo,
       email: email ?? this.email,
+      profileUrl: profileUrl ??  this.profileUrl,
       uid: uid ?? this.uid,
       currentSem: currentSem ?? this.currentSem,
       status: status ?? this.status,
       isVerified: isVerified ?? this.isVerified,
       totalCredit: totalCredit ?? this.totalCredit,
       leftCredit: leftCredit ?? this.leftCredit,
+      leftOverCredit: leftOverCredit ?? this.leftOverCredit,
       currentBal: currentBal ?? this.currentBal,
       topupHistory: topupHistory ?? this.topupHistory,
       hostel: hostel ?? this.hostel,
@@ -87,12 +95,14 @@ class StudentModel {
       name: json["name"],
       rollNo: json["roll_no"],
       email: json["email"],
+      profileUrl: json["profile_url"],
       uid: json["uid"],
       currentSem: json["current_sem"],
       status: json["status"],
       isVerified: json["is_verified"],
       totalCredit: json["total_credit"],
       leftCredit: json["left_credit"],
+      leftOverCredit: json["left_over_credit"],
       currentBal: json["current_bal"],
       topupHistory: json["topup_history"] == null
           ? []
@@ -116,11 +126,13 @@ class StudentModel {
         "roll_no": rollNo,
         "email": email,
         "uid": uid,
+        "profile_url":profileUrl,
         "current_sem": currentSem,
         "status": status,
         "is_verified": isVerified,
         "total_credit": totalCredit,
         "left_credit": leftCredit,
+        "left_over_credit": leftOverCredit,
         "current_bal": currentBal,
         "topup_history": topupHistory.map((x) => x.toJson()).toList(),
         "hostel": hostel?.toJson(),
@@ -134,7 +146,7 @@ class StudentModel {
 
   @override
   String toString() {
-    return "$name, $rollNo, $email, $uid, $currentSem, $status, $isVerified, $totalCredit, $leftCredit, $currentBal, $topupHistory, $hostel, $createdAt, $updatedAt, $lastActive, $createdBy, $updatedBy, $leaveHistory";
+    return "$name, $rollNo, $email, $profileUrl, $uid, $currentSem, $status, $isVerified, $totalCredit, $leftCredit, $currentBal, $topupHistory, $hostel, $createdAt, $updatedAt, $lastActive, $createdBy, $updatedBy, $leaveHistory";
   }
 }
 
@@ -147,13 +159,13 @@ class CouponTransactionHistory {
   });
 
   final int? amount;
-  final DateTime? transactionTime;
+  final String? transactionTime;
   final String? transactionId;
   final String? status;
 
   CouponTransactionHistory copyWith({
     int? amount,
-    DateTime? transactionTime,
+    String? transactionTime,
     String? transactionId,
     String? status,
   }) {
@@ -168,7 +180,7 @@ class CouponTransactionHistory {
   factory CouponTransactionHistory.fromJson(Map<String, dynamic> json) {
     return CouponTransactionHistory(
       amount: json["amount"],
-      transactionTime: DateTime.tryParse(json["transaction_time"] ?? ""),
+      transactionTime: json["transaction_time"],
       transactionId: json["transaction_id"],
       status: json["status"],
     );
@@ -176,7 +188,7 @@ class CouponTransactionHistory {
 
   Map<String, dynamic> toJson() => {
         "amount": amount,
-        "transaction_time": transactionTime?.toIso8601String(),
+        "transaction_time": transactionTime,
         "transaction_id": transactionId,
         "status": status,
       };
@@ -281,13 +293,13 @@ class LeaveHistory {
   });
 
   final String? leaveId;
-  final DateTime? startDate;
-  final DateTime? endDate;
+  final String? startDate;
+  final String? endDate;
 
   LeaveHistory copyWith({
     String? leaveId,
-    DateTime? startDate,
-    DateTime? endDate,
+    String? startDate,
+    String? endDate,
   }) {
     return LeaveHistory(
       leaveId: leaveId ?? this.leaveId,
@@ -299,15 +311,15 @@ class LeaveHistory {
   factory LeaveHistory.fromJson(Map<String, dynamic> json) {
     return LeaveHistory(
       leaveId: json["leave_id"],
-      startDate: DateTime.tryParse(json["start_date"] ?? ""),
-      endDate: DateTime.tryParse(json["end_date"] ?? ""),
+      startDate: json["start_date"],
+      endDate: json["end_date"],
     );
   }
 
   Map<String, dynamic> toJson() => {
         "leave_id": leaveId,
-        "start_date": startDate?.toIso8601String(),
-        "end_date": endDate?.toIso8601String(),
+        "start_date": startDate,
+        "end_date": endDate,
       };
 
   @override
@@ -325,12 +337,12 @@ class TopupHistory {
 
   final String? transactionId;
   final int? amount;
-  final DateTime? transactionTime;
+  final String? transactionTime;
 
   TopupHistory copyWith({
     String? transactionId,
     int? amount,
-    DateTime? transactionTime,
+    String? transactionTime,
   }) {
     return TopupHistory(
       transactionId: transactionId ?? this.transactionId,
@@ -343,14 +355,14 @@ class TopupHistory {
     return TopupHistory(
       transactionId: json["transaction_id"],
       amount: json["amount"],
-      transactionTime: DateTime.tryParse(json["transaction_time"] ?? ""),
+      transactionTime: json["transaction_time"],
     );
   }
 
   Map<String, dynamic> toJson() => {
         "transaction_id": transactionId,
         "amount": amount,
-        "transaction_time": transactionTime?.toIso8601String(),
+        "transaction_time": transactionTime,
       };
 
   @override

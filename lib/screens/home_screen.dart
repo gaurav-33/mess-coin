@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
@@ -52,8 +54,10 @@ class HomeScreen extends StatelessWidget {
         title: "Menu",
         iconPath: "assets/icons/menu.png",
         onTap: () {
+          homeController.messMenuModel.isEmpty
+              ? homeController.fetchMessMenuData()
+              : null;
           Get.toNamed(AppRoutes.getMessMenuRoute());
-          // homeController.uploadMenu();
         },
       ),
       CardWidget(
@@ -70,110 +74,136 @@ class HomeScreen extends StatelessWidget {
           Get.toNamed(AppRoutes.getProfileRoute());
         },
       ),
+      CardWidget(
+        title: "FeedBack",
+        iconPath: "assets/icons/feedback.png",
+        onTap: () {
+          Get.toNamed(AppRoutes.getFeedbackRoute());
+        },
+      ),
+      CardWidget(
+        title: "Leave",
+        iconPath: "assets/icons/leave.png",
+        onTap: () {
+          Get.toNamed(AppRoutes.getLeaveRoute());
+        },
+      ),
+      CardWidget(
+        title: "Logout",
+        iconPath: "assets/icons/logout.png",
+        onTap: () async {
+          await FirebaseAuth.instance.signOut();
+          Get.toNamed(AppRoutes.getLoginRoute());
+        },
+      ),
     ];
 
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Column(
-        children: [
-          HeaderWidget(
-            homeController: homeController,
-            isWelcomeText: true,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-            child: Column(
-              children: [
-                NameDividerWidget(name: "Quick Actions"),
-                Obx(
-                  () => SizedBox(
-                    height: height * 0.33,
-                    child: homeController.studentModel.value == null
-                        ? Center(
-                            child: SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: const CircularProgressIndicator()),
-                          )
-                        : GridView.count(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            children: cardWidgetList,
-                          ),
-                  ),
-                ),
-                NameDividerWidget(name: "Today's Extra"),
-                const SizedBox(
-                  height: 5,
-                ),
-                Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Breakfast",
-                      style: TextStyle(
-                          color: AppColors.grey,
-                          fontFamily: "Poppins",
-                          fontSize: width * 0.035,
-                          fontWeight: FontWeight.w600),
-                    )),
-                const SizedBox(
-                  height: 5,
-                ),
-                Obx(
-                  () => _buildExtraMenuItem(
-                      homeController.extraMealModel.value?.breakfast),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Lunch",
-                      style: TextStyle(
-                          color: AppColors.grey,
-                          fontFamily: "Poppins",
-                          fontSize: width * 0.035,
-                          fontWeight: FontWeight.w600),
-                    )),
-                const SizedBox(
-                  height: 5,
-                ),
-                Obx(
-                  () => _buildExtraMenuItem(
-                      homeController.extraMealModel.value?.lunch),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Dinner",
-                      style: TextStyle(
-                          color: AppColors.grey,
-                          fontFamily: "Poppins",
-                          fontSize: width * 0.035,
-                          fontWeight: FontWeight.w600),
-                    )),
-                const SizedBox(
-                  height: 5,
-                ),
-                Obx(
-                  () => _buildExtraMenuItem(
-                      homeController.extraMealModel.value?.dinner),
-                ),
-                const SizedBox(
-                  height: 16,
-                )
-              ],
+        body: RefreshIndicator(
+      onRefresh: () => homeController.fetchStudentData(),
+      color: AppColors.nightSky,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            HeaderWidget(
+              homeController: homeController,
+              isWelcomeText: true,
             ),
-          )
-        ],
+            const SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+              child: Column(
+                children: [
+                  NameDividerWidget(name: "Quick Actions"),
+                  Obx(
+                    () => SizedBox(
+                      height: height * 0.35,
+                      child: homeController.studentModel.value == null
+                          ? Center(
+                              child: SizedBox(
+                                  height: 50,
+                                  width: 50,
+                                  child: const CircularProgressIndicator()),
+                            )
+                          : GridView.count(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              children: cardWidgetList,
+                            ),
+                    ),
+                  ),
+                  NameDividerWidget(name: "Today's Extra"),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Breakfast",
+                        style: TextStyle(
+                            color: AppColors.grey,
+                            fontFamily: "Poppins",
+                            fontSize: width * 0.035,
+                            fontWeight: FontWeight.w600),
+                      )),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Obx(
+                    () => _buildExtraMenuItem(
+                        homeController.extraMealModel.value?.breakfast),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Lunch",
+                        style: TextStyle(
+                            color: AppColors.grey,
+                            fontFamily: "Poppins",
+                            fontSize: width * 0.035,
+                            fontWeight: FontWeight.w600),
+                      )),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Obx(
+                    () => _buildExtraMenuItem(
+                        homeController.extraMealModel.value?.lunch),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Dinner",
+                        style: TextStyle(
+                            color: AppColors.grey,
+                            fontFamily: "Poppins",
+                            fontSize: width * 0.035,
+                            fontWeight: FontWeight.w600),
+                      )),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Obx(
+                    () => _buildExtraMenuItem(
+                        homeController.extraMealModel.value?.dinner),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     ));
   }

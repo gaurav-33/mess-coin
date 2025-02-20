@@ -5,7 +5,6 @@ import '../routes/app_routes.dart';
 import '../widgets/back_button.dart';
 import '../widgets/header_widget.dart';
 import '../widgets/rect_button.dart';
-
 import '../controllers/local_auth_controller.dart';
 import '../res/app_colors.dart';
 import '../utils/toast_snack_bar.dart';
@@ -78,14 +77,14 @@ class RechargeScreen extends StatelessWidget {
                             return "Amount is required";
                           }
                           if (int.tryParse(value) == null) {
-                            return "Enter a valid number";
+                            return "Not valid";
                           }
-                          if (int.parse(value) < 350) {
-                            return "Amount must be greater than 350";
+                          if (int.parse(value) < 500 && homeController.studentModel.value!.leftCredit! >= 500) {
+                            return "Min. ₹500";
                           }
                           if (int.parse(value) >
                               homeController.studentModel.value!.leftCredit!) {
-                            return "Amount must be less than ${homeController.studentModel.value!.leftCredit!}";
+                            return "*Less than ${homeController.studentModel.value!.leftCredit!}";
                           }
                           return null;
                         }),
@@ -96,20 +95,8 @@ class RechargeScreen extends StatelessWidget {
             SizedBox(
               height: height * 0.2,
             ),
-            RectButton(
-                child: Obx(
-                  () => homeController.isLoading.value
-                      ? const CircularProgressIndicator(
-                          color: AppColors.aquaPastel,
-                        )
-                      : Text(
-                          "Recharge",
-                          style: TextStyle(
-                              color: AppColors.aquaPastel,
-                              fontSize: 20,
-                              fontFamily: "Aquire"),
-                        ),
-                ),
+            Obx(() => RectButton(
+                name: "Request",
                 onTap: () async {
                   if (_formKey.currentState!.validate() &&
                       homeController.isLoading.value == false) {
@@ -127,13 +114,14 @@ class RechargeScreen extends StatelessWidget {
                         return;
                       }
                     }
-                    await homeController.performRecharge(
+                    await homeController.performTopupRequest(
                         amountController.text.trim().toString(),
                         transactionId,
                         transactionTime);
                     showRechargeSuccessDialog(context, transactionId);
                   }
-                }),
+                },
+                isLoading: homeController.isLoading.value)),
             const SizedBox(
               height: 20,
             ),
@@ -158,31 +146,33 @@ class RechargeScreen extends StatelessWidget {
             size: 80,
           ),
           title: const Text(
-            "Recharge Successful",
+            "Request Successful",
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 fontFamily: "Poppins",
                 color: AppColors.nightSky),
           ),
-          content: Wrap(
-            direction: Axis.vertical,
-            children: [
-              Text(
-                "Your recharge was successful! \nYour new current balance is updated.",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontFamily: "Poppins",
+          content: SizedBox(
+            child: Wrap(
+              direction: Axis.vertical,
+              children: [
+                Text(
+                  "Your Request was successful!.",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Poppins",
+                  ),
                 ),
-              ),
-              SelectableText(
-                "TxnId: $transactionId",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontFamily: "Poppins",
+                SelectableText(
+                  "TxnId: $transactionId",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Poppins",
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(

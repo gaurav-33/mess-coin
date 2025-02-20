@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import '../models/topup_request_model.dart';
 import '../models/user_model.dart';
 import '../services/firestore_ref_service.dart';
 import '../utils/toast_snack_bar.dart';
@@ -14,7 +16,7 @@ class StudentService {
     try {
       final CollectionReference<StudentModel> studentRef =
           firestoreRefService.getCollectionRef<StudentModel>(
-              basePath: 'hostel_mess/${studentModel.hostel!.id}/students',
+              basePath: 'unverified',
               fromJson: (json) => StudentModel.fromJson(json),
               toJson: (model) => model.toJson());
       await studentRef.doc(studentModel.uid!.toString()).set(studentModel);
@@ -40,9 +42,35 @@ class StudentService {
 
       if (studentDoc.exists) {
         return studentDoc.data();
+       }// else {
+      //   AppSnackBar.error("Student does not exist for UID: $uid");
+      // }
+    } catch (e) {
+      if (e is FirebaseException) {
+        AppSnackBar.error(e.message ?? "An error occurred.", errorCode: e.code);
       } else {
-        AppSnackBar.error("Student does not exist for UID: $uid");
+        AppSnackBar.error("An unexpected error occurred.");
       }
+    }
+    return null;
+  }
+
+  Future<StudentModel?> fetchTempStudent(String uid) async {
+    try {
+      final DocumentSnapshot<StudentModel> studentDoc =
+          await firestoreRefService
+              .getCollectionRef<StudentModel>(
+                  basePath: 'unverified',
+                  fromJson: (json) => StudentModel.fromJson(json),
+                  toJson: (model) => model.toJson())
+              .doc(uid)
+              .get();
+
+      if (studentDoc.exists) {
+        return studentDoc.data();
+      }// else {
+      //   AppSnackBar.error("Student does not exist for UID: $uid");
+      // }
     } catch (e) {
       if (e is FirebaseException) {
         AppSnackBar.error(e.message ?? "An error occurred.", errorCode: e.code);
@@ -83,6 +111,26 @@ class StudentService {
     }
   }
 
+  Future<void> addTopupRequest(
+      String hostelId, TopupRequestModel topupRequestModel) async {
+    try {
+      CollectionReference<TopupRequestModel> topupRequestRef =
+          firestoreRefService.getCollectionRef<TopupRequestModel>(
+              basePath: "hostel_mess/$hostelId/topup_request",
+              fromJson: (json) => TopupRequestModel.fromJson(json),
+              toJson: (model) => model.toJson());
+      await topupRequestRef
+          .doc(topupRequestModel.transactionId)
+          .set(topupRequestModel);
+    } catch (e) {
+      if (e is FirebaseException) {
+        AppSnackBar.error(e.message ?? "An error occurred.", errorCode: e.code);
+      } else {
+        AppSnackBar.error("An unexpected error occurred. ${e.toString()}");
+      }
+    }
+  }
+
   Future<void> addCouponTransaction(
       String hostelId,
       String uid,
@@ -95,7 +143,7 @@ class StudentService {
           couponTransactionHistoryRef =
           firestoreRefService.getCollectionRef<CouponTransactionHistory>(
               basePath:
-                  "hostel_mess/$hostelId/students/$uid/coupon_transaction_history/doc/${DateTime.now().toIso8601String().split('T')[0]}",
+                  "hostel_mess/$hostelId/students/$uid/coupon_transaction_history/doc/${DateFormat('dd-MM-yyyy').format(DateTime.now())}",
               fromJson: (json) => CouponTransactionHistory.fromJson(json),
               toJson: (model) => model.toJson());
 
@@ -157,7 +205,7 @@ class StudentService {
   List<String> getPastNdays(DateTime startDate, int n) {
     return List.generate(n, (index) {
       DateTime pastDates = startDate.subtract(Duration(days: index));
-      return "${pastDates.toLocal()}".split(' ')[0];
+      return DateFormat('dd-MM-yyyy').format(pastDates);
     });
   }
 }

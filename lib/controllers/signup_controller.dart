@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/user_model.dart';
+import '../services/image_service.dart';
 import '../services/student_service.dart';
 import '../routes/app_routes.dart';
 import '../services/firestore_ref_service.dart';
@@ -84,8 +88,16 @@ class SignupController extends GetxController {
 
         final isVerified = await _waitForEmailVerification();
         if (isVerified) {
+
           String uid = _auth.currentUser!.uid;
-          await _createFirestoreUser(name, roll, email, uid);
+
+          String? imageUrl = '';
+          if (imageFile.value != null) {
+            String extension = imageFile.value!.path.split('.').last;
+            String newFileName = "img_${uid}_$roll.$extension";
+            imageUrl = await ImageService().uploadImage(imageFile.value!.path, fileName: newFileName);
+          }
+          await _createFirestoreUser(name, roll, email, uid, imageUrl);
           AppSnackBar.success("Account created successfully!");
           AppLogger.i(
               "Account created successfully for user: $uid"); // Log successful account creation
@@ -113,17 +125,19 @@ class SignupController extends GetxController {
   }
 
   Future<void> _createFirestoreUser(
-      String name, String roll, String email, String uid) async {
+      String name, String roll, String email, String uid, String? imageUrl) async {
     StudentModel studentModel = StudentModel(
-        name: name.toString().camelCase,
+        name: name.toString().capitalize,
         rollNo: roll,
         email: email,
         uid: uid,
+        profileUrl: imageUrl,
         currentSem: 0,
         isVerified: false,
         status: "deactivated",
         totalCredit: 0,
         leftCredit: 0,
+        leftOverCredit: 0,
         currentBal: 0,
         hostel: Hostel(
             id: selectedHostelId.value,
@@ -159,50 +173,31 @@ class SignupController extends GetxController {
     return true;
   }
 
-  Future<void> manualCheckVerification() async {
+  var imageFile = Rx<File?>(null);
+  final ImagePicker _picker = ImagePicker();
+  Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
+
+  Future<void> pickImageFromGallery() async {
     try {
-      await firebaseUser.value?.reload();
-      firebaseUser.value = _auth.currentUser;
-      if (firebaseUser.value?.emailVerified ?? false) {
-        AppSnackBar.success("Email verified successfully.");
-        AppLogger.i(
-            "Manual email verification successful."); // Log successful manual verification
-        Get.offAllNamed(AppRoutes.getLoginRoute());
-      } else {
-        AppSnackBar.error(
-            "Email is not verified yet. Please check your email.");
-        AppLogger.w(
-            "Email not verified in manual check."); // Log manual check failure
+      XFile? pickedFile = await _picker.pickImage(
+          source: ImageSource.gallery, imageQuality: 50);
+      if (pickedFile != null) {
+        imageFile.value = File(pickedFile.path);
       }
     } catch (e) {
-      AppSnackBar.error(
-          "An error occurred while checking verification status.");
-      AppLogger.e(
-          "Error checking verification status: $e"); // Log error during manual check
+      AppSnackBar.error(e.toString());
     }
   }
 
-  Future<void> resendVerificationEmail() async {
-    if (firebaseUser.value != null) {
-      try {
-        await firebaseUser.value!.sendEmailVerification();
-        AppSnackBar.success("Verification email sent successfully.");
-        AppLogger.i(
-            "Verification email resent to ${firebaseUser.value?.email}"); // Log resent email
-        canResendEmail.value = false;
-        Future.delayed(const Duration(seconds: 60), () {
-          canResendEmail.value = true;
-        });
-      } catch (e) {
-        AppSnackBar.error(
-            "Failed to send verification email. Please try again.");
-        AppLogger.e(
-            "Failed to resend verification email: $e"); // Log error while resending
+  Future<void> pickImageFromCamera() async {
+    try {
+      XFile? pickedFile =
+          await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
+      if (pickedFile != null) {
+        imageFile.value = File(pickedFile.path);
       }
-    } else {
-      AppSnackBar.error("No user is logged in to resend the email.");
-      AppLogger.w(
-          "No logged in user for resending verification email."); // Log missing logged-in user
+    } catch (e) {
+      AppSnackBar.error(e.toString());
     }
   }
 }

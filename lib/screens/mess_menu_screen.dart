@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/header_widget.dart';
-
 import '../res/app_colors.dart';
 import '../widgets/back_button.dart';
 import '../widgets/card_widget.dart';
@@ -11,6 +10,7 @@ import '../widgets/card_widget.dart';
 class MessMenuScreen extends StatelessWidget {
   MessMenuScreen({super.key});
   HomeController homeController = Get.find<HomeController>();
+
   @override
   Widget build(BuildContext context) {
     final double width = Get.width;
@@ -88,7 +88,7 @@ class MessMenuScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            HeaderWidget(homeController: homeController),
+            HeaderWidget(homeController: homeController,),
             const SizedBox(
               height: 20,
             ),
@@ -218,6 +218,7 @@ class MessMenuScreen extends StatelessWidget {
                     child: Text(
                       item,
                       textAlign: TextAlign.justify,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: AppColors.aquaPastel,
                         fontFamily: "Poppins",

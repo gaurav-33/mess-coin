@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:messcoin/models/topup_request_model.dart';
 import '../models/extra_meal_model.dart';
 import '../models/mess_menu_model.dart';
 import '../models/user_model.dart';
@@ -14,7 +15,7 @@ import '../utils/logger_util.dart';
 class HomeController extends GetxController {
   Rx<StudentModel?> studentModel = Rx<StudentModel?>(null);
   Rx<ExtraMealModel?> extraMealModel = Rx<ExtraMealModel?>(null);
-  RxMap<String, MessMenuModel?> messMenuModel = RxMap<String, MessMenuModel?>();
+  RxMap<String, MessMenuModel?> messMenuModel = <String, MessMenuModel?>{}.obs;
   RxList<CouponTransactionHistory> couponTransactionHistoryList =
       RxList<CouponTransactionHistory>();
 
@@ -42,13 +43,16 @@ class HomeController extends GetxController {
     await fetchStudentData();
 
     if (studentModel.value == null) {
-      AppLogger.w("Student data is null. Redirecting...");
-      Get.offAllNamed(AppRoutes.getSelectHostelRoute());
-      return;
+      await fetchTempStudentData();
+      if (studentModel.value == null) {
+        AppLogger.w("Student data is null. Redirecting...");
+
+        Get.offAllNamed(AppRoutes.getSelectHostelRoute());
+        return;
+      }
     }
 
     fetchExtraMealData();
-    fetchMessMenuData();
   }
 
   Future<void> fetchStudentData() async {
@@ -61,7 +65,25 @@ class HomeController extends GetxController {
         AppLogger.i("Student data fetched successfully.");
       } else {
         AppLogger.w("User data not found.");
-        AppSnackBar.error("User Data Not Found.");
+        // AppSnackBar.error("User Data Not Found.");
+      }
+    } catch (e) {
+      AppLogger.e("Error fetching student data: $e");
+      AppSnackBar.error(e.toString());
+    }
+  }
+
+  Future<void> fetchTempStudentData() async {
+    try {
+      AppLogger.d("Fetching temp student data...");
+      final fetchedStudent = await StudentService().fetchTempStudent(uid);
+
+      if (fetchedStudent != null) {
+        studentModel.value = fetchedStudent;
+        AppLogger.i("Student data fetched successfully.");
+      } else {
+        AppLogger.w("User data not found.");
+        // AppSnackBar.error("User Data Not Found.");
       }
     } catch (e) {
       AppLogger.e("Error fetching student data: $e");
@@ -87,47 +109,28 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> performRecharge(
+  Future<void> performTopupRequest(
       String amount, String transactionId, DateTime transactionTime) async {
     try {
       isLoading.value = true;
       AppLogger.d(
-          "Performing recharge of ₹$amount with transaction ID: $transactionId");
-
-      int rechargeAmount = int.tryParse(amount) ?? 0;
+          "Processing payment request of ₹$amount with transaction ID: $transactionId");
+      int paymentAmount = int.tryParse(amount) ?? 0;
       int prevAmount = studentModel.value?.currentBal ?? 0;
-      int leftCredit = studentModel.value?.leftCredit ?? 0;
-      TopupHistory topupHistory = TopupHistory(
-          transactionId: transactionId,
-          amount: rechargeAmount,
-          transactionTime: transactionTime);
 
-      await StudentService().addRechargeTransaction(hostelId, uid, prevAmount,
-          leftCredit, rechargeAmount, transactionTime, topupHistory);
-
-      await HostelMessService().addTransaction(
-          isTopUp: true,
-          hostelId: hostelId,
-          name: "${studentModel.value?.name}",
-          rollNo: "${studentModel.value?.rollNo}",
-          rechargeAmount: rechargeAmount,
+      TopupRequestModel topupRequestModel = TopupRequestModel(
+          uid: uid,
+          rollNo: studentModel.value?.rollNo,
+          name: studentModel.value?.name,
+          amount: paymentAmount,
           transactionId: transactionId,
           transactionTime: transactionTime.toIso8601String());
+      await StudentService().addTopupRequest(hostelId, topupRequestModel);
 
-      studentModel.value = studentModel.value?.copyWith(
-        currentBal: prevAmount + rechargeAmount,
-        leftCredit: leftCredit - rechargeAmount,
-        topupHistory: [
-          ...(studentModel.value?.topupHistory ?? []),
-          topupHistory
-        ],
-      );
-      AppLogger.i(
-          "Recharge successful. New balance: ₹${prevAmount + rechargeAmount}");
-      AppSnackBar.success("Recharge successful!");
-      isLoading.value = false;
+      AppLogger.i("Payment Request successful.");
+      AppSnackBar.success("Request Successful.");
     } catch (e) {
-      AppLogger.e("Recharge failed: $e");
+      AppLogger.e("Payment request failed: $e");
       AppSnackBar.error("An error occurred: ${e.toString()}");
     } finally {
       isLoading.value = false;
@@ -147,7 +150,7 @@ class HomeController extends GetxController {
           CouponTransactionHistory(
               transactionId: transactionId,
               amount: paymentAmount,
-              transactionTime: transactionTime,
+              transactionTime: transactionTime.toIso8601String(),
               status: "completed");
 
       await StudentService().addCouponTransaction(hostelId, uid, paymentAmount,
@@ -193,7 +196,11 @@ class HomeController extends GetxController {
         final fetchMessMenuData =
             await MenuServices().fetchMenuMeal(hostelId, day);
         if (fetchMessMenuData != null) {
-          messMenuModel.value[day] = fetchMessMenuData;
+          messMenuModel.update(
+            day,
+            (_) => fetchMessMenuData,
+            ifAbsent: () => fetchMessMenuData,
+          );
           AppLogger.i("Fetched mess menu for $day.");
         } else {
           AppLogger.w("Mess menu not found for $day.");

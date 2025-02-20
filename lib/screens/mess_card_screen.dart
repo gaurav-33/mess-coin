@@ -150,7 +150,10 @@ class MessCardScreen extends StatelessWidget {
         ),
         child: ClipOval(
           child: Image.network(
-            "https://i.pinimg.com/736x/c0/99/15/c099159849a5f3399e05335f2c56adca.jpg",
+            (homeController.studentModel.value?.profileUrl == "" ||
+                    homeController.studentModel.value?.profileUrl == null)
+                ? "https://i.pinimg.com/736x/c0/99/15/c099159849a5f3399e05335f2c56adca.jpg"
+                : homeController.studentModel.value?.profileUrl ?? "https://i.pinimg.com/736x/c0/99/15/c099159849a5f3399e05335f2c56adca.jpg",
             fit: BoxFit.cover,
           ),
         ),

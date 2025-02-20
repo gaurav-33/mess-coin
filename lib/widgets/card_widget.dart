@@ -67,6 +67,7 @@ class CardWidget extends StatelessWidget {
               title,
               textAlign: TextAlign.justify,
               style: TextStyle(
+                fontSize:Get.width *0.03,
                   color: AppColors.nightSky,
                   fontFamily: "Poppins",
                   fontWeight: FontWeight.w600),

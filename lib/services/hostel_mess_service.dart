@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import '../models/hostel_mess_model.dart';
 import '../services/firestore_ref_service.dart';
 import '../models/mess_topup_history_model.dart';
@@ -53,7 +54,7 @@ class HostelMessService {
       CollectionReference<MessTopupHistoryModel> messTopupModelRef =
           firestoreRefService.getCollectionRef<MessTopupHistoryModel>(
               basePath:
-                  'hostel_mess/$hostelId/$path/doc/${DateTime.now().toIso8601String().split('T')[0]}',
+                  'hostel_mess/$hostelId/$path/doc/${DateFormat('dd-MM-yyyy').format(DateTime.now())}',
               fromJson: (json) => MessTopupHistoryModel.fromJson(json),
               toJson: (model) => model.toJson());
 

@@ -23,123 +23,115 @@ class PaymentScreen extends StatelessWidget {
     final height = Get.height;
     final width = Get.width;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            HeaderWidget(homeController: homeController),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              "Pay",
-              style: TextStyle(
-                fontFamily: "Aquire",
-                fontSize: width * 0.06,
-                fontWeight: FontWeight.w500,
-                color: AppColors.nightSky,
+      body: RefreshIndicator(
+        onRefresh: () => homeController.fetchStudentData(),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              HeaderWidget(homeController: homeController),
+              const SizedBox(
+                height: 20,
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.currency_rupee_rounded,
-                  size: width * 0.1,
+              Text(
+                "Pay",
+                style: TextStyle(
+                  fontFamily: "Aquire",
+                  fontSize: width * 0.06,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.nightSky,
                 ),
-                SizedBox(
-                  width: width * 0.5,
-                  child: Form(
-                    key: _formKey,
-                    child: TextFormField(
-                        controller: amountController,
-                        style: TextStyle(
-                          fontFamily: "Aquire",
-                          fontSize: width * 0.06,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.nightSky,
-                        ),
-                        keyboardType: TextInputType.phone,
-                        maxLength: 4,
-                        decoration: InputDecoration(
-                          hintText: "Enter amount",
-                          hintStyle: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.nightSky.withOpacity(0.7),
-                              fontFamily: "Poppins"),
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 3, horizontal: 6),
-                        ),
-                        validator: (String? value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Amount is required";
-                          }
-                          if (int.tryParse(value) == null) {
-                            return "Enter a valid number";
-                          }
-                          if (int.parse(value) <= 0) {
-                            return "Amount must be greater than 0";
-                          }
-                          if (int.parse(value) >
-                              homeController.studentModel.value!.currentBal!) {
-                            return "Amount must be less than ${homeController.studentModel.value!.currentBal!}";
-                          }
-                          return null;
-                        }),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.currency_rupee_rounded,
+                    size: width * 0.1,
+                    color: AppColors.nightSky,
                   ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: height * 0.2,
-            ),
-            RectButton(
-                child: Obx(
-                  () => homeController.isLoading.value
-                      ? const CircularProgressIndicator(
-                          color: AppColors.aquaPastel,
-                        )
-                      : Text(
-                          "Pay",
+                  SizedBox(
+                    width: width * 0.5,
+                    child: Form(
+                      key: _formKey,
+                      child: TextFormField(
+                          controller: amountController,
                           style: TextStyle(
-                              color: AppColors.aquaPastel,
-                              fontSize: 20,
-                              fontFamily: "Aquire"),
-                        ),
-                ),
-                onTap: () async {
-                  if (_formKey.currentState!.validate() &&
-                      homeController.isLoading.value == false) {
-                    DateTime transactionTime = DateTime.now();
-                    String transactionId =
-                        "txn_${transactionTime.microsecondsSinceEpoch}${homeController.studentModel.value?.rollNo}";
-                    if (localAuthController.canAuthenticate.value) {
-                      bool isAuthenticated =
-                          await localAuthController.performAuthentication();
-
-                      if (!isAuthenticated) {
-                        AppSnackBar.error(
-                            "Authentication failed. Payment not processed.");
-                        return;
+                            fontFamily: "Aquire",
+                            fontSize: width * 0.06,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.nightSky,
+                          ),
+                          keyboardType: TextInputType.phone,
+                          maxLength: 4,
+                          decoration: InputDecoration(
+                            hintText: "Enter amount",
+                            hintStyle: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.nightSky.withOpacity(0.7),
+                                fontFamily: "Poppins"),
+                            contentPadding:
+                                EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+                          ),
+                          validator: (String? value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "Amount is required";
+                            }
+                            if (int.tryParse(value) == null) {
+                              return "Enter a valid number";
+                            }
+                            if (int.parse(value) <= 0) {
+                              return "Amount must be greater than 0";
+                            }
+                            if (int.parse(value) >
+                                homeController.studentModel.value!.currentBal!) {
+                              return "Amount must be less than ${homeController.studentModel.value!.currentBal!}";
+                            }
+                            return null;
+                          }),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: height * 0.2,
+              ),
+              Obx(() => RectButton(
+                  name: "Pay",
+                  onTap: () async {
+                    if (_formKey.currentState!.validate() &&
+                        homeController.isLoading.value == false) {
+                      DateTime transactionTime = DateTime.now();
+                      String transactionId =
+                          "txn_${transactionTime.microsecondsSinceEpoch}${homeController.studentModel.value?.rollNo}";
+                      if (localAuthController.canAuthenticate.value) {
+                        bool isAuthenticated =
+                            await localAuthController.performAuthentication();
+        
+                        if (!isAuthenticated) {
+                          AppSnackBar.error(
+                              "Authentication failed. Payment not processed.");
+                          return;
+                        }
                       }
+                      await homeController.performPayment(
+                        amountController.text.trim(),
+                        transactionId,
+                        transactionTime,
+                      );
+                      showPaymentSuccessDialog(context, transactionId);
                     }
-                    await homeController.performPayment(
-                      amountController.text.trim(),
-                      transactionId,
-                      transactionTime,
-                    );
-                    showPaymentSuccessDialog(context, transactionId);
-                  }
-                }),
-            const SizedBox(
-              height: 20,
-            ),
-            BackButtonWidget()
-          ],
+                  },
+                  isLoading: homeController.isLoading.value)),
+              const SizedBox(
+                height: 20,
+              ),
+              BackButtonWidget()
+            ],
+          ),
         ),
       ),
     );

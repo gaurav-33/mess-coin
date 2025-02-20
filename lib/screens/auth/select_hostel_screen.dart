@@ -64,29 +64,20 @@ class SelectHostelScreen extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            RectButton(child: Obx(() {
-              return hostelController.isLoading.value
-                  ? CircularProgressIndicator(
-                      color: AppColors.aquaPastel,
-                    )
-                  : Text(
-                      "Next",
-                      style: TextStyle(
-                          color: AppColors.aquaPastel,
-                          fontSize: 20,
-                          fontFamily: "Aquire"),
-                    );
-            }), onTap: () {
-              if (hostelController.selectedHostelId.value == null) {
-                AppSnackBar.error("Choose Hostel First.");
-              } else {
-                HostelIdPreferences.saveHostelId(
-                    hostelController.selectedHostelId.value);
-                Get.offAllNamed(AppRoutes.getHomeRoute(), arguments: {
-                  'hostel_id': hostelController.selectedHostelId.value
-                });
-              }
-            }),
+            Obx(() => RectButton(
+                name: "Next",
+                onTap: () {
+                  if (hostelController.selectedHostelId.value == null) {
+                    AppSnackBar.error("Choose Hostel First.");
+                  } else {
+                    HostelIdPreferences.saveHostelId(
+                        hostelController.selectedHostelId.value);
+                    Get.offAllNamed(AppRoutes.getHomeRoute(), arguments: {
+                      'hostel_id': hostelController.selectedHostelId.value
+                    });
+                  }
+                },
+                isLoading: hostelController.isLoading.value))
           ],
         ),
       ),
