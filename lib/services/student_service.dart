@@ -42,7 +42,7 @@ class StudentService {
 
       if (studentDoc.exists) {
         return studentDoc.data();
-       }// else {
+      } // else {
       //   AppSnackBar.error("Student does not exist for UID: $uid");
       // }
     } catch (e) {
@@ -68,7 +68,7 @@ class StudentService {
 
       if (studentDoc.exists) {
         return studentDoc.data();
-      }// else {
+      } // else {
       //   AppSnackBar.error("Student does not exist for UID: $uid");
       // }
     } catch (e) {

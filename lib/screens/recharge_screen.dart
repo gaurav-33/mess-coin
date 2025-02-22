@@ -79,7 +79,9 @@ class RechargeScreen extends StatelessWidget {
                           if (int.tryParse(value) == null) {
                             return "Not valid";
                           }
-                          if (int.parse(value) < 500 && homeController.studentModel.value!.leftCredit! >= 500) {
+                          if (int.parse(value) < 500 &&
+                              homeController.studentModel.value!.leftCredit! >=
+                                  500) {
                             return "Min. ₹500";
                           }
                           if (int.parse(value) >

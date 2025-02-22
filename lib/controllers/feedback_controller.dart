@@ -1,20 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
-import 'package:intl/find_locale.dart';
 import 'package:intl/intl.dart';
-import 'package:messcoin/controllers/home_controller.dart';
-import 'package:messcoin/models/feedback_model.dart';
-import 'package:messcoin/models/user_model.dart';
-import 'package:messcoin/services/firestore_ref_service.dart';
+import '../controllers/home_controller.dart';
+import '../models/feedback_model.dart';
+import '../services/firestore_ref_service.dart';
 import '../services/image_service.dart';
 import '../utils/toast_snack_bar.dart';
-import 'package:http/http.dart' as http;
 
 class FeedbackController extends GetxController {
   var imageFile = Rx<File?>(null);

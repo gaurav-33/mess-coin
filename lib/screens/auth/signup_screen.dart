@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/utils/toast_snack_bar.dart';
+import '../../utils/toast_snack_bar.dart';
 import '../../controllers/signup_controller.dart';
 import '../../res/app_colors.dart';
 import '../../routes/app_routes.dart';
@@ -64,7 +64,9 @@ class SignupScreen extends StatelessWidget {
                 color: AppColors.nightSky,
               ),
             ),
-            const SizedBox(height: 8,),
+            const SizedBox(
+              height: 8,
+            ),
             _buildImageUi(context),
             _buidInputField(
                 title: "Name",
@@ -228,7 +230,7 @@ class SignupScreen extends StatelessWidget {
                 ),
                 child: TextButton(
                   onPressed: () {
-                    Get.back();
+                    // Get.back();
                     _launchGmail();
                   },
                   child: Text(
@@ -373,7 +375,8 @@ class SignupScreen extends StatelessWidget {
 
   _launchGmail() async {
     if (Platform.isAndroid) {
-      final Uri gmailUri = Uri.parse("intent://com.google.android.gm/#Intent;scheme=android-app;end;");
+      final Uri gmailUri = Uri.parse(
+          "intent://com.google.android.gm/#Intent;scheme=android-app;end;");
       if (await canLaunchUrl(gmailUri)) {
         await launchUrl(gmailUri);
       } else {

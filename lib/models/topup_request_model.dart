@@ -26,7 +26,7 @@ class TopupRequestModel {
     return TopupRequestModel(
       uid: uid ?? this.uid,
       rollNo: rollNo ?? this.rollNo,
-      name:  name ?? this.name,
+      name: name ?? this.name,
       amount: amount ?? this.amount,
       transactionId: transactionId ?? this.transactionId,
       transactionTime: transactionTime ?? this.transactionTime,
@@ -47,7 +47,7 @@ class TopupRequestModel {
   Map<String, dynamic> toJson() => {
         "uid": uid,
         "roll_no": rollNo,
-        "name":name,
+        "name": name,
         "amount": amount,
         "transaction_id": transactionId,
         "transaction_time": transactionTime,

@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
@@ -91,9 +90,8 @@ class HomeScreen extends StatelessWidget {
       CardWidget(
         title: "Logout",
         iconPath: "assets/icons/logout.png",
-        onTap: () async {
-          await FirebaseAuth.instance.signOut();
-          Get.toNamed(AppRoutes.getLoginRoute());
+        onTap: () {
+          showLogoutAlert(context);
         },
       ),
     ];
@@ -251,5 +249,53 @@ class HomeScreen extends StatelessWidget {
                   )))
               .toList(),
         ));
+  }
+
+  void showLogoutAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          icon: Icon(
+            Icons.dangerous_rounded,
+            color: Colors.red[800],
+            size: 80,
+          ),
+          title: const Text(
+            "Are you sure you want to logout?",
+            style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                fontFamily: "Poppins",
+                color: AppColors.nightSky),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Get.back();
+                await FirebaseAuth.instance.signOut();
+                Get.offAllNamed(AppRoutes.getLoginRoute());
+              },
+              child: const Text(
+                "Yes",
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                Get.back();
+              },
+              child: const Text(
+                "No",
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

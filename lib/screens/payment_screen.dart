@@ -73,8 +73,8 @@ class PaymentScreen extends StatelessWidget {
                                 fontSize: 14,
                                 color: AppColors.nightSky.withOpacity(0.7),
                                 fontFamily: "Poppins"),
-                            contentPadding:
-                                EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 3, horizontal: 6),
                           ),
                           validator: (String? value) {
                             if (value == null || value.trim().isEmpty) {
@@ -87,7 +87,8 @@ class PaymentScreen extends StatelessWidget {
                               return "Amount must be greater than 0";
                             }
                             if (int.parse(value) >
-                                homeController.studentModel.value!.currentBal!) {
+                                homeController
+                                    .studentModel.value!.currentBal!) {
                               return "Amount must be less than ${homeController.studentModel.value!.currentBal!}";
                             }
                             return null;
@@ -110,7 +111,7 @@ class PaymentScreen extends StatelessWidget {
                       if (localAuthController.canAuthenticate.value) {
                         bool isAuthenticated =
                             await localAuthController.performAuthentication();
-        
+
                         if (!isAuthenticated) {
                           AppSnackBar.error(
                               "Authentication failed. Payment not processed.");

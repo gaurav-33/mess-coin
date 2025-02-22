@@ -88,14 +88,14 @@ class SignupController extends GetxController {
 
         final isVerified = await _waitForEmailVerification();
         if (isVerified) {
-
           String uid = _auth.currentUser!.uid;
 
           String? imageUrl = '';
           if (imageFile.value != null) {
             String extension = imageFile.value!.path.split('.').last;
             String newFileName = "img_${uid}_$roll.$extension";
-            imageUrl = await ImageService().uploadImage(imageFile.value!.path, fileName: newFileName);
+            imageUrl = await ImageService()
+                .uploadImage(imageFile.value!.path, fileName: newFileName);
           }
           await _createFirestoreUser(name, roll, email, uid, imageUrl);
           AppSnackBar.success("Account created successfully!");
@@ -124,8 +124,8 @@ class SignupController extends GetxController {
     }
   }
 
-  Future<void> _createFirestoreUser(
-      String name, String roll, String email, String uid, String? imageUrl) async {
+  Future<void> _createFirestoreUser(String name, String roll, String email,
+      String uid, String? imageUrl) async {
     StudentModel studentModel = StudentModel(
         name: name.toString().capitalize,
         rollNo: roll,

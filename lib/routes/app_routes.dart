@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/screens/feedback_screen.dart';
-import 'package:messcoin/screens/leave_screen.dart';
+import '../screens/feedback_screen.dart';
+import '../screens/leave_screen.dart';
 import '../screens/auth/select_hostel_screen.dart';
 import '../screens/history_screen.dart';
 import '../screens/mess_card_screen.dart';

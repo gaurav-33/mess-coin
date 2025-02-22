@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/controllers/feedback_controller.dart';
-import 'package:messcoin/widgets/rect_button.dart';
+import '../controllers/feedback_controller.dart';
+import '../widgets/rect_button.dart';
 import '../controllers/home_controller.dart';
 import '../res/app_colors.dart';
 import '../widgets/header_widget.dart';
@@ -14,7 +14,6 @@ class FeedbackScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = Get.height;
     final width = Get.width;
     return Scaffold(
       body: SingleChildScrollView(

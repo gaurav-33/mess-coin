@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../controllers/home_controller.dart';
 import '../res/app_colors.dart';
-
 import '../routes/app_routes.dart';
 
 class MessCardScreen extends StatelessWidget {
@@ -58,8 +57,8 @@ class MessCardScreen extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          width: 400,
-          height: 600,
+          width: Get.width * 0.9,
+          height: Get.height * 0.615,
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.5),
             borderRadius: BorderRadius.circular(20),
@@ -88,8 +87,8 @@ class MessCardScreen extends StatelessWidget {
     return Positioned(
       bottom: 20,
       child: Container(
-        height: 500,
-        width: 360,
+        height: Get.height * 0.525,
+        width: Get.width * 0.82,
         decoration: BoxDecoration(
           color: AppColors.aquaPastel,
           borderRadius: BorderRadius.circular(20),
@@ -97,11 +96,11 @@ class MessCardScreen extends StatelessWidget {
         child: Column(
           children: [
             _buildHeaderUI(),
-            const SizedBox(height: 90),
+            SizedBox(height: Get.width * 0.21),
             _buildDetailRow("Name", student?.name ?? "N/A"),
             _buildDetailRow("Roll No", student?.rollNo ?? "N/A"),
             _buildDetailRow("Room No", student?.hostel?.roomNumber ?? "N/A"),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             _buildQRCode("${student?.uid}"),
           ],
         ),
@@ -111,7 +110,7 @@ class MessCardScreen extends StatelessWidget {
 
   Widget _buildHeaderUI() {
     return Container(
-      height: 120,
+      height: Get.height * 0.15,
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.nightSky,
@@ -124,8 +123,8 @@ class MessCardScreen extends StatelessWidget {
         child: Text(
           homeController.studentModel.value?.hostel?.name ?? "Hostel Name",
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 24,
+          style: TextStyle(
+            fontSize: Get.width * 0.06,
             fontFamily: "Poppins",
             color: AppColors.aquaPastel,
             fontWeight: FontWeight.w600,
@@ -137,10 +136,10 @@ class MessCardScreen extends StatelessWidget {
 
   Widget _buildProfileUI() {
     return Positioned(
-      top: 175,
+      top: Get.height * 0.2,
       child: Container(
-        width: 120,
-        height: 120,
+        width: Get.width * 0.3,
+        height: Get.width * 0.3,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(width: 3, color: AppColors.aquaPastel),
@@ -153,7 +152,8 @@ class MessCardScreen extends StatelessWidget {
             (homeController.studentModel.value?.profileUrl == "" ||
                     homeController.studentModel.value?.profileUrl == null)
                 ? "https://i.pinimg.com/736x/c0/99/15/c099159849a5f3399e05335f2c56adca.jpg"
-                : homeController.studentModel.value?.profileUrl ?? "https://i.pinimg.com/736x/c0/99/15/c099159849a5f3399e05335f2c56adca.jpg",
+                : homeController.studentModel.value?.profileUrl ??
+                    "https://i.pinimg.com/736x/c0/99/15/c099159849a5f3399e05335f2c56adca.jpg",
             fit: BoxFit.cover,
           ),
         ),
@@ -193,7 +193,7 @@ class MessCardScreen extends StatelessWidget {
     return QrImageView(
       data: data,
       version: QrVersions.auto,
-      size: 140,
+      size: Get.width * 0.32,
     );
   }
 }

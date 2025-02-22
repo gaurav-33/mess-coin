@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:messcoin/controllers/home_controller.dart';
-
+import '../controllers/home_controller.dart';
 import '../models/user_model.dart';
 import '../res/app_colors.dart';
 import '../widgets/header_widget.dart';
@@ -43,7 +42,6 @@ class LeaveScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               children: [
-                
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

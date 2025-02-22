@@ -88,7 +88,9 @@ class MessMenuScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            HeaderWidget(homeController: homeController,),
+            HeaderWidget(
+              homeController: homeController,
+            ),
             const SizedBox(
               height: 20,
             ),

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:messcoin/models/topup_request_model.dart';
+import '../models/topup_request_model.dart';
 import '../models/extra_meal_model.dart';
 import '../models/mess_menu_model.dart';
 import '../models/user_model.dart';
@@ -116,7 +116,6 @@ class HomeController extends GetxController {
       AppLogger.d(
           "Processing payment request of ₹$amount with transaction ID: $transactionId");
       int paymentAmount = int.tryParse(amount) ?? 0;
-      int prevAmount = studentModel.value?.currentBal ?? 0;
 
       TopupRequestModel topupRequestModel = TopupRequestModel(
           uid: uid,

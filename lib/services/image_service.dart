@@ -8,10 +8,13 @@ class ImageService {
       var request = http.MultipartRequest('POST',
           Uri.parse('https://api.cloudinary.com/v1_1/deldnmfon/image/upload'));
 
-          fileName ??= "image_${DateTime.now().millisecondsSinceEpoch}";
+      fileName ??= "image_${DateTime.now().millisecondsSinceEpoch}";
 
-      request.fields
-          .addAll({'upload_preset': 'hyvirtnn', 'api_key': '695157996344396', 'public_id': fileName});
+      request.fields.addAll({
+        'upload_preset': 'hyvirtnn',
+        'api_key': '695157996344396',
+        'public_id': fileName
+      });
       request.files.add(await http.MultipartFile.fromPath('file', imageFile));
 
       http.StreamedResponse response = await request.send();
