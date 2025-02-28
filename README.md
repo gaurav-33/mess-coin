@@ -12,7 +12,7 @@ MessCoin is a digital mess coupon system that replaces the traditional paper cou
 ## Installation
 1. Clone the repository:
    ```sh
-   git clone <repo-url>
+   git clone https://github.com/gaurav-33/mess-coin.git
    ```
 2. Navigate to the project directory:
    ```sh
@@ -47,7 +47,7 @@ MessCoin is a digital mess coupon system that replaces the traditional paper cou
 - **GetX** (State Management & Routing)
 
 ## Contributing
-This is a private repository with a personal license. If you are part of the development team and want to contribute:
+<!-- This is a private repository with a personal license. If you are part of the development team and want to contribute: -->
 1. Fork the repository (if applicable).
 2. Create a new branch:
    ```sh
