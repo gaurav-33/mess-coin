@@ -9,23 +9,6 @@ MessCoin is a digital mess coupon system that replaces the traditional paper cou
 - **Hostel Management:** Students are assigned to hostels, and data is stored accordingly.
 - **Extra Meals & Menu Tracking:** Tracks extra meal requests and displays the mess menu.
 
-## Installation
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/gaurav-33/mess-coin.git
-   ```
-2. Navigate to the project directory:
-   ```sh
-   cd messcoin
-   ```
-3. Install dependencies:
-   ```sh
-   flutter pub get
-   ```
-4. Run the app:
-   ```sh
-   flutter run
-   ```
 
 ## Authentication Flow
 - If **biometric authentication** is available, users must authenticate before making a payment.
@@ -46,22 +29,16 @@ MessCoin is a digital mess coupon system that replaces the traditional paper cou
 - **Local Authentication** (Biometric & PIN authentication)
 - **GetX** (State Management & Routing)
 
-## Contributing
-<!-- This is a private repository with a personal license. If you are part of the development team and want to contribute: -->
-1. Fork the repository (if applicable).
-2. Create a new branch:
-   ```sh
-   git checkout -b feature-branch
-   ```
-3. Commit changes:
-   ```sh
-   git commit -m "Add new feature"
-   ```
-4. Push to the branch:
-   ```sh
-   git push origin feature-branch
-   ```
-5. Open a Pull Request.
+## UI
+![Screenshot_2025-03-15-15-59-15-04_4f040d7df525f480d15b5790f9bc7b5a](https://github.com/user-attachments/assets/1e0e8447-6365-4f52-88cf-879d0d9be632)
+![Screenshot_2025-03-15-15-59-10-36_4f040d7df525f480d15b5790f9bc7b5a](https://github.com/user-attachments/assets/3f2afb07-9b23-494b-b165-8a86a6f978bd)
+![Screenshot_2025-03-15-15-59-07-37_4f040d7df525f480d15b5790f9bc7b5a](https://github.com/user-attachments/assets/a2222c91-09d1-4125-b8c3-74d99d80e8d0)
+![Screenshot_2025-03-15-15-59-00-22_4f040d7df525f480d15b5790f9bc7b5a](https://github.com/user-attachments/assets/7bdd2ccb-cef2-4fb4-a9cc-8e8f853439d5)
+![Screenshot_2025-03-15-15-58-57-42_4f040d7df525f480d15b5790f9bc7b5a](https://github.com/user-attachments/assets/2463201a-1bd7-454b-b170-ec4835710841)
+![Screenshot_2025-03-15-15-58-51-44_4f040d7df525f480d15b5790f9bc7b5a](https://github.com/user-attachments/assets/e6c5a53a-8c9c-42b7-af48-8448c4baca9c)
+![Screenshot_2025-03-15-15-58-49-21_4f040d7df525f480d15b5790f9bc7b5a](https://github.com/user-attachments/assets/21060f6f-d21a-4887-945e-5fc9c53f0cf1)
+![Screenshot_2025-03-15-15-58-32-11_4f040d7df525f480d15b5790f9bc7b5a](https://github.com/user-attachments/assets/e98ae1e0-43e6-4589-85d0-9d042be2fa9c)
+
 
 ## Contact
 For any queries, contact the project owner.
